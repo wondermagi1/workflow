@@ -40,4 +40,4 @@ jobs:
       - name: Verify delivered example
         run: python -m unittest discover -s examples/average -p test_solution.py -v
       - name: Build source archive
-        run: python scripts/package.py --package-name CodeFlow-Homework2
+        run: python scripts/package.py --package-name CodeFlow

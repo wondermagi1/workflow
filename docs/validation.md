@@ -1,12 +1,12 @@
-# CodeFlow 实际验收记录
+# CodeFlow 测试与验证记录
 
-验收日期：2026-10-24。以下区分框架回归、真实模型请求、静态分析和实际执行测试的证据。
+验证日期：2026-10-24。以下区分框架回归、真实模型请求、静态分析和实际执行测试的证据。
 
 ## 自动检查
 
 | 检查 | 本机结果 |
 | --- | --- |
-| `python -m unittest discover -s tests -q` | 149 个测试全部通过，20.355 秒；包括作业 1 回归与新增 17 个工作流测试 |
+| `python -m unittest discover -s tests -q` | 149 个测试全部通过，20.355 秒；包括基础 Agent 回归与 17 个工作流测试 |
 | `python -m compileall -q codeflow workflow.py` | 通过 |
 | `node --check codeflow/static/app.js` | 通过 |
 | `node tests/test_webui.cjs` | 原界面脚本回归通过 |
@@ -20,7 +20,7 @@
 
 GitHub 的 [自动检查工作流](https://github.com/wondermagi1/workflow/actions/workflows/ci.yml) 在 Windows / Ubuntu、Python 3.10 / 3.13 上复核这些命令；最新远端状态以该页面为准。
 
-首次跨版本检查发现作业 1 的离线报告使用了 Python 3.12 才支持的 f-string 表达式写法。已将正则表达式计算移出 f-string；全部公开 Python 源码通过 3.10 语法解析，相关 Agent / 模式 28 个测试通过。
+跨版本检查覆盖 Python 3.10 与 3.13。离线报告中的正则表达式计算已移出 f-string，以兼容 Python 3.10；全部公开 Python 源码通过 3.10 语法解析，相关 Agent / 模式 28 个测试通过。
 
 ## 真实 DeepSeek 任务
 
@@ -51,11 +51,11 @@ GitHub 的 [自动检查工作流](https://github.com/wondermagi1/workflow/actio
 
 实机截图：[桌面工作台](images/workspace.jpg)、[移动端](images/mobile.jpg)。截图来自运行中的应用，没有替换界面内容。
 
-## 验收边界
+## 验证范围与限制
 
 - 模型分数只表示模型的静态判断，不能代替运行测试或人工审查。
 - JavaScript / TypeScript 当前只有通用文本规则；没有 TypeScript 编译器或语言服务。
 - 离线演示仅处理内置去重案例，不冒充真实模型。
 - 仅支持单模块任务，一个工作流最多 5 个节点；单节点内部可以进行多次模型与静态工具交互。
-- 项目绑定本机地址，提供个人课程演示与开发用途；没有公开部署在线服务。
-- 私有 `.env`、运行目录与个人历史不进入 Git 或源码归档；公开示例经过单独筛选。
+- 项目绑定本机地址，适用于个人开发与本地演示；没有公开部署在线服务。
+- 私有 `.env`、运行目录与个人历史不进入 Git；公开示例经过单独筛选。

@@ -4,13 +4,13 @@
 
 **从一个想法，到一份可审查的实现。**
 
-基于作业 1 的 Python 代码助手框架，CodeFlow 将一个编码任务交给 **需求规划师 → 编码工程师 → 代码审查师** 协作处理。每个角色独立调用模型，通过 JSON 共享需求、验收标准、代码和审查反馈；首轮未通过时，编码师修复一次，再由审查师复审。
+CodeFlow 是一个基于 Python 的多 Agent 编码工作台，将编码任务交给 **需求规划师 → 编码工程师 → 代码审查师** 协作处理。每个角色独立调用模型，通过 JSON 共享需求、验收标准、代码和审查反馈；首轮未通过时，编码师修复一次，再由审查师复审。
 
-界面沿用 LearnFlow 的黑、白、灰视觉：大标题、细线边框、黑色主按钮、独立的角色卡片与清晰的代码阅读区域。
+界面采用黑、白、灰视觉：大标题、细线边框、黑色主按钮、独立的角色卡片与清晰的代码阅读区域。
 
 ![CodeFlow 工作台实机截图](docs/images/workspace.jpg)
 
-[查看移动端截图](docs/images/mobile.jpg) · [架构设计](Design.md) · [作业要求对应](docs/homework2.md) · [实际验收记录](docs/validation.md)
+[查看移动端截图](docs/images/mobile.jpg) · [架构设计](Design.md) · [使用指南](docs/workflow.md) · [测试与验证](docs/validation.md)
 
 ## 核心功能
 
@@ -19,7 +19,7 @@
 | 需求生成 / 代码修复 | 描述需求，或粘贴 / 导入一个现有代码文件 |
 | 三角色协作 | 独立提示词、独立模型请求、明确的输入输出合同 |
 | 条件分支与有限循环 | 3 个主节点；审查不通过时增加一次修复与一次复审，最多 5 个工作流节点 |
-| 真实静态检查 | 复用作业 1 的 Python AST 与通用文本规则，将检查结果交给审查 Agent |
+| 真实静态检查 | 使用 Python AST 与通用文本规则，将检查结果交给审查 Agent |
 | 代码交付 | 浏览实现和测试文件、复制、下载包含代码与报告的 ZIP |
 | 变更对比 | 基于原始输入和最新实现计算真实 unified diff |
 | 质量审查 | 展示问题位置、严重度、建议、验收清单和模型评分 |
@@ -58,9 +58,9 @@ CODE_AGENT_MODEL=deepseek-flash
 CODE_AGENT_PROVIDER=openai
 ```
 
-这里 `openai` 是作业 1 保留的兼容协议客户端名称，实际请求发往配置的 DeepSeek 地址。环境变量优先于 `.env`，修改后重启服务。密钥不会返回给浏览器，`.env`、运行记录与本机日志都被源码打包和 Git 忽略。
+这里 `openai` 表示 OpenAI 兼容协议客户端，实际请求发往配置的 DeepSeek 地址。环境变量优先于 `.env`，修改后重启服务。密钥不会返回给浏览器，`.env`、运行记录与本机日志均由 Git 忽略。
 
-后端使用 JSON 输出，显式关闭 DeepSeek 思考模式，单次请求超时 120 秒；不进行隐藏的自动计费重试，失败后由用户显式继续。一个工作流节点可在作业 1 的 Agent 循环内调用静态检查工具，因此其模型请求数可能大于 1，页面会记录实际请求数和 token 用量。
+后端使用 JSON 输出，显式关闭 DeepSeek 思考模式，单次请求超时 120 秒；不进行隐藏的自动计费重试，失败后由用户显式继续。一个工作流节点可在 Agent 循环内调用静态检查工具，因此其模型请求数可能大于 1，页面会记录实际请求数和 token 用量。
 
 官方协议见 [DeepSeek Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/)。
 
@@ -117,18 +117,18 @@ flowchart LR
 - JSON 导入会检查步骤顺序和输出合同，分配新记录 ID，且不会自动调用模型。
 - 当前只允许一个任务执行，避免多次点击造成并行计费；历史与状态保存在当前项目目录，不是云端账户同步。
 
-## 复用了作业 1 的哪些内容
+## 核心模块
 
-| 模块 | 在新工作流中的作用 |
+| 模块 | 作用 |
 | --- | --- |
-| `agent/agent.py` 的 `CodeAgent` | 每个角色共用原有模型 → 工具 → 模型的 Agent 循环 |
+| `agent/agent.py` 的 `CodeAgent` | 为每个角色提供模型 → 工具 → 模型的 Agent 循环 |
 | `agent/config.py` | `.env` 与环境变量配置、运行参数 |
 | `agent/llm.py` | Chat Completions HTTP 传输、模型响应与工具调用解析 |
 | `agent/memory.py` | 每个角色独立的短期对话上下文 |
 | `agent/tools.py` | 注册 `inspect_code` 静态检查工具，复用工具协议 |
 | `agent/analysis.py` | Python AST、语法错误、规则问题、符号与指标分析 |
 
-工作流节点仅注册静态检查工具，不向模型开放作业 1 的写文件、Python 执行或测试执行工具。原命令行 `main.py` 和原网页 `webui.py` 保留，启动新工作流请使用 `workflow.py`。
+工作流节点仅注册静态检查工具，不向模型开放写文件、Python 执行或测试执行工具。`main.py` 和 `webui.py` 是基础代码助手的独立入口，启动 CodeFlow 工作流请使用 `workflow.py`。
 
 ## 开发与测试
 
@@ -144,32 +144,23 @@ node --check codeflow/static/app.js
 node tests/test_webui.cjs
 ```
 
-测试复用作业 1 的回归用例，并补充工作流合同、三角色上下文、有限修复、暂停恢复、重启恢复、HTTP 导出与密钥边界测试。自动化测试使用离线或伪造响应，不调用真实模型。
+测试覆盖基础 Agent 框架、工作流合同、三角色上下文、有限修复、暂停恢复、重启恢复、HTTP 导出与密钥边界。自动化测试使用离线或伪造响应，不调用真实模型。
 
 GitHub Actions 在 Windows 与 Ubuntu 上执行回归测试、编译检查、浏览器脚本语法检查和已交付示例测试，不需要 API 密钥。
 
 ```text
-workflow.py               新工作流启动入口
+workflow.py               CodeFlow 启动入口
 codeflow/contracts.py      状态机、输入输出合同、导入校验
-codeflow/nodes.py          三角色与作业 1 CodeAgent 的适配
+codeflow/nodes.py          三角色与 CodeAgent 的适配
 codeflow/runtime.py        编排、日志、持久化、恢复、差异与报告
 codeflow/server.py         本机 API 与文件下载
 codeflow/static/           黑白界面、样式和浏览器交互
-agent/                    复用的作业 1 框架
-tests/                    既有回归测试与新增工作流测试
+agent/                    基础 Agent 框架与静态分析
+tests/                    Agent 与工作流回归测试
 examples/                 示例输入与运行记录
-docs/                     验收说明与作业对应清单
-scripts/package.py        排除密钥和运行状态的源码打包
+docs/                     使用指南与测试验证记录
 ```
 
-更多设计见 [Design.md](Design.md)，作业要求对应见 [docs/homework2.md](docs/homework2.md)，验收结果见 [docs/validation.md](docs/validation.md)。
-
-## 源码打包
-
-```bash
-python scripts/package.py --package-name CodeFlow-Homework2
-```
-
-生成 `dist/CodeFlow-Homework2.zip`。该脚本排除 `.env`、`.workflow_runs`、`.runtime`、会话、上传、生成物、Git 元数据和缓存。需要课程备份时，将压缩包改成自己的“学号姓名”，填写真实信息；项目不会代填学号或姓名。
+更多设计见 [Design.md](Design.md)，操作与故障排查见 [docs/workflow.md](docs/workflow.md)，测试结果见 [docs/validation.md](docs/validation.md)。
 
 源码仓库：[wondermagi1/workflow](https://github.com/wondermagi1/workflow)。应用运行在本机，历史记录与密钥由使用者本地保存。

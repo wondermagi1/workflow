@@ -1,6 +1,6 @@
 # CodeFlow 操作与故障排查
 
-启动入口为 `python workflow.py --open`，默认端口 8010。`webui.py` 是保留的作业 1 界面。
+启动入口为 `python workflow.py --open`，默认端口 8010。`webui.py` 是基础代码助手的独立界面。
 
 ## 推荐体验顺序
 
