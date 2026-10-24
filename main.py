@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """代码助手 Agent 的命令行入口。
 
+CodeFlow 三 Agent 网页：python workflow.py --open
+默认地址：http://127.0.0.1:8010/（需先启动服务）
+
 用法示例::
 
     python main.py "审查 examples/buggy_sample.py"

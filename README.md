@@ -47,6 +47,16 @@ python workflow.py --open
 python workflow.py --port 8011 --open
 ```
 
+项目入口对照：
+
+| 入口 | 功能 | 默认网页地址 |
+| --- | --- | --- |
+| `python workflow.py --open` | CodeFlow 三 Agent 代码工作流 | [http://127.0.0.1:8010/](http://127.0.0.1:8010/) |
+| `python webui.py --open` | 基础单 Agent 代码助手 | [http://127.0.0.1:8000/](http://127.0.0.1:8000/) |
+| `python main.py` | 基础代码助手命令行 | 无网页 |
+
+访问网页前需要启动对应服务；CodeFlow 的网页入口是 `workflow.py`。
+
 ### DeepSeek 配置
 
 复制 `.env.example` 为 `.env`，填入自己的服务端密钥：
