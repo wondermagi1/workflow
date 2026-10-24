@@ -1,0 +1,43 @@
+name: CodeFlow checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.10', '3.13']
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - name: Regression tests
+        run: python -m unittest discover -s tests -q
+      - name: Compile application
+        run: python -m compileall -q codeflow workflow.py
+      - name: Check browser scripts
+        run: node --check codeflow/static/app.js
+      - name: Legacy UI regression
+        run: node tests/test_webui.cjs
+      - name: Verify delivered example
+        run: python -m unittest discover -s examples/average -p test_solution.py -v
+      - name: Build source archive
+        run: python scripts/package.py --package-name CodeFlow-Homework2
