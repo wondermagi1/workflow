@@ -20,6 +20,8 @@
 
 GitHub 的 [自动检查工作流](https://github.com/wondermagi1/workflow/actions/workflows/ci.yml) 在 Windows / Ubuntu、Python 3.10 / 3.13 上复核这些命令；最新远端状态以该页面为准。
 
+首次跨版本检查发现作业 1 的离线报告使用了 Python 3.12 才支持的 f-string 表达式写法。已将正则表达式计算移出 f-string；全部公开 Python 源码通过 3.10 语法解析，相关 Agent / 模式 28 个测试通过。
+
 ## 真实 DeepSeek 任务
 
 - 输入：修复平均值函数，使空列表返回 `None`，非空列表返回算术平均值，不修改输入，并补充正常、空列表、负数、单元素测试。

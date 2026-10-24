@@ -876,12 +876,13 @@ class MockLLM:
         path: Optional[str],
     ) -> str:
         target = write_result.get("path") or path or "<未写入>"
+        description = self._cell(re.sub(r"\s+", " ", user_text.strip()))[:200]
         lines = [
             f"# 代码生成：`{target}`",
             "",
             "## 需求理解",
             "",
-            f"- 原始描述：{self._cell(re.sub(r'\s+', ' ', user_text.strip()))[:200]}",
+            f"- 原始描述：{description}",
             "- 输入 / 输出 / 边界条件：需要结合业务语义补全（离线骨架不含语义推断）",
             "",
             "## 已生成",
