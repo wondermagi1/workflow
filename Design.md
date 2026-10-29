@@ -2,7 +2,7 @@
 
 ## 目标
 
-构建可观察、可恢复的三角色软件工程工作流。角色负责不同决策，工作流负责依赖、共享状态、条件分支和检查点；工具层与编排层分离，便于独立扩展。
+在作业 1 的单 Agent 框架上，增加可观察、可恢复的三角色软件工程工作流。角色负责不同决策，工作流负责依赖、共享状态、条件分支和检查点；将原工具层与新编排层分开，便于扩展。
 
 ## 分层架构
 
@@ -12,15 +12,15 @@ flowchart TD
     API --> MANAGER[RunManager 工作流编排]
     MANAGER --> STORE[RunStore 原子检查点]
     MANAGER --> NODE[NodeRunner 角色适配]
-    NODE --> CORE[CodeAgent 模型与工具循环]
+    NODE --> CORE[作业 1 CodeAgent]
     CORE --> MEMORY[ConversationMemory 独立角色上下文]
     CORE --> TOOL[ToolRegistry / inspect_code]
-    TOOL --> AST[analyze_source 静态分析]
-    CORE --> CLIENT[JsonClient / 兼容协议 HTTP 客户端]
+    TOOL --> AST[作业 1 analyze_source]
+    CORE --> CLIENT[JsonClient 继承作业 1 HTTP 客户端]
     CLIENT --> DS[DeepSeek Chat Completions]
 ```
 
-后端使用 Python 标准库，通过本地 JSON 文件持久化状态，无需安装第三方运行依赖。前端使用原生 HTML、CSS 和 JavaScript，采用黑、白、灰视觉，浏览器直接加载静态资源。
+后端使用 Python 标准库，没有新建数据库、LangChain 或第三方调度系统。界面沿用 LearnFlow 的视觉语言，但运行时保留作业 1 的 Python 框架；无需安装原 LearnFlow 的 Node.js 依赖。
 
 ## 三角色合同
 
